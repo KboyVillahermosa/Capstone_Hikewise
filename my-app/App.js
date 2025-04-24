@@ -10,6 +10,9 @@ import LoginScreen from './screens/LoginScreen';
 import RegisterScreen from './screens/RegisterScreen';
 import HomeScreen from './screens/HomeScreen';
 import HikingSpotDetailsScreen from './screens/HikingSpotDetailsScreen';
+import ActivityDetailsScreen from './screens/ActivityDetailsScreen';
+import TrackingScreen from './screens/TrackingScreen';
+import HikeHistoryScreen from './screens/HikeHistoryScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -32,6 +35,12 @@ export default function App() {
     return null; // Or a loading screen
   }
 
+  // For debugging purposes, log the screens we have available
+  console.log("Available screens in navigator:", [
+    "Home", "HikingSpotDetails", "ActivityDetails", 
+    "Tracking", "HikeHistory", "Login", "Register"
+  ]);
+
   return (
     <NavigationContainer>
       <Stack.Navigator>
@@ -43,6 +52,13 @@ export default function App() {
               component={HikingSpotDetailsScreen} 
               options={{ headerShown: false }}
             />
+            <Stack.Screen 
+              name="ActivityDetails" 
+              component={ActivityDetailsScreen} 
+              options={{ headerShown: false }} 
+            />
+            <Stack.Screen name="Tracking" component={TrackingScreen} options={{ headerShown: false }} />
+            <Stack.Screen name="HikeHistory" component={HikeHistoryScreen} options={{ headerShown: false }} />
           </>
         ) : (
           <>
