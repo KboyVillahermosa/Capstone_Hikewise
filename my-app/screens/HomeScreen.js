@@ -23,6 +23,32 @@ const Tab = createBottomTabNavigator()
 const { width } = Dimensions.get('window');
 
 function HikingSpotCard({ spot, navigation }) {
+  // Map database paths to corresponding image requires
+  const getImageSource = (path) => {
+    // Check if it's already a valid URL
+    if (path && (path.startsWith('http://') || path.startsWith('https://'))) {
+      return { uri: path };
+    }
+    
+    // Map relative paths to actual image requires
+    const imageMap = {
+      '../assets/images/spot1.jpg': require('../assets/images/spot1.jpg'),
+      '../assets/images/spot2.jpg': require('../assets/images/spot2.jpg'),
+      '../assets/images/spot3.jpg': require('../assets/images/spot3.jpg'),
+      '../assets/images/spot4.jpg': require('../assets/images/spot4.jpg'),
+      '../assets/images/spot5.jpg': require('../assets/images/spot5.jpg'),
+    };
+    
+    // Use the mapped image if available, or the first image as a fallback
+    try {
+      return imageMap[path] || require('../assets/images/spot1.jpg');
+    } catch (error) {
+      console.log('Error loading image:', error);
+      // If all else fails, return the first image we know exists
+      return require('../assets/images/spot1.jpg');
+    }
+  };
+
   // Calculate full stars, half stars and empty stars
   const fullStars = Math.floor(spot.average_rating || 0);
   const halfStar = (spot.average_rating || 0) - fullStars >= 0.5;
@@ -35,9 +61,10 @@ function HikingSpotCard({ spot, navigation }) {
       activeOpacity={0.9}
     >
       <Image 
-        source={{ uri: spot.image_url }} 
+        source={getImageSource(spot.image_url)} 
         style={styles.cardImage} 
         resizeMode="cover"
+        onError={() => console.log('Failed to load image:', spot.image_url)}
       />
       <View style={styles.cardBadge}>
         <Text style={styles.cardBadgeText}>Hiking</Text>
