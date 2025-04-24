@@ -254,18 +254,18 @@ const styles = StyleSheet.create({
     marginBottom: 24,
   },
   forgotPasswordText: {
-    color: '#FC4C02', // Strava orange
+    color: '#1976D2', // Mountain Blue instead of Strava orange
     fontSize: 14,
     fontWeight: '600',
   },
   loginButton: {
-    backgroundColor: '#FC4C02', // Strava orange
+    backgroundColor: '#2E7D32', // Forest Green instead of Strava orange
     borderRadius: 12,
     height: 54,
     justifyContent: 'center',
     alignItems: 'center',
     elevation: 3,
-    shadowColor: '#000',
+    shadowColor: '#2E7D32',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.15,
     shadowRadius: 4,
@@ -289,6 +289,6 @@ const styles = StyleSheet.create({
   registerLink: {
     fontSize: 15,
     fontWeight: 'bold',
-    color: '#FC4C02', // Strava orange
+    color: '#1976D2', // Mountain Blue instead of Strava orange
   }
 })

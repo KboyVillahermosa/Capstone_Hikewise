@@ -178,16 +178,16 @@ export default function RegisterScreen({ navigation }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: '#F5F5F5',
     overflow: 'hidden',
   },
-  // Circular design elements with stronger colors
+  // Circular design elements with hiking-inspired colors
   circle1: {
     position: 'absolute',
     width: 200,
     height: 200,
     borderRadius: 100,
-    backgroundColor: 'rgba(252, 76, 2, 0.15)', // Stronger Strava orange
+    backgroundColor: 'rgba(46, 125, 50, 0.15)', // Forest Green
     top: -50,
     right: -60,
   },
@@ -196,7 +196,7 @@ const styles = StyleSheet.create({
     width: 150,
     height: 150,
     borderRadius: 75,
-    backgroundColor: 'rgba(252, 76, 2, 0.12)', // More visible Strava orange
+    backgroundColor: 'rgba(25, 118, 210, 0.12)', // Mountain Blue
     top: 80,
     left: -40,
   },
@@ -205,7 +205,7 @@ const styles = StyleSheet.create({
     width: 300,
     height: 300,
     borderRadius: 150,
-    backgroundColor: 'rgba(252, 76, 2, 0.08)', // Slightly visible Strava orange
+    backgroundColor: 'rgba(141, 110, 99, 0.08)', // Earthy Brown
     bottom: -100,
     right: -100,
   },
@@ -268,13 +268,13 @@ const styles = StyleSheet.create({
     color: '#222222',
   },
   registerButton: {
-    backgroundColor: '#FC4C02', // Full Strava orange (no transparency)
+    backgroundColor: '#2E7D32', // Forest Green as primary action color
     borderRadius: 30,
     height: 54,
     justifyContent: 'center',
     alignItems: 'center',
     marginTop: 20,
-    shadowColor: '#FC4C02',
+    shadowColor: '#2E7D32',
     shadowOffset: { width: 0, height: 5 },
     shadowOpacity: 0.35, // More pronounced shadow
     shadowRadius: 10,
@@ -299,6 +299,6 @@ const styles = StyleSheet.create({
   loginLink: {
     fontSize: 15,
     fontWeight: 'bold',
-    color: '#FC4C02', // Full Strava orange
+    color: '#1976D2', // Mountain Blue for links
   }
 })

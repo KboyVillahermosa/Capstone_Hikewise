@@ -76,15 +76,15 @@ function HikingSpotCard({ spot, navigation }) {
           <View style={styles.ratingContainer}>
             {/* Render full stars */}
             {[...Array(fullStars)].map((_, i) => (
-              <FontAwesome key={`star-${i}`} name="star" size={14} color="#FC4C02" style={{marginRight: 2}} />
+              <FontAwesome key={`star-${i}`} name="star" size={14} color="#2E7D32" style={{marginRight: 2}} />
             ))}
             
             {/* Render half star if needed */}
-            {halfStar && <FontAwesome name="star-half-o" size={14} color="#FC4C02" style={{marginRight: 2}} />}
+            {halfStar && <FontAwesome name="star-half-o" size={14} color="#2E7D32" style={{marginRight: 2}} />}
             
             {/* Render empty stars */}
             {[...Array(emptyStars)].map((_, i) => (
-              <FontAwesome key={`empty-star-${i}`} name="star-o" size={14} color="#FC4C02" style={{marginRight: 2}} />
+              <FontAwesome key={`empty-star-${i}`} name="star-o" size={14} color="#2E7D32" style={{marginRight: 2}} />
             ))}
             
             <Text style={styles.cardRatingCount}>
@@ -105,7 +105,7 @@ function HikingSpotCard({ spot, navigation }) {
         <View style={styles.cardFooter}>
           <View style={styles.exploreButton}>
             <Text style={styles.exploreButtonText}>Explore</Text>
-            <MaterialIcons name="arrow-forward" size={16} color="#FC4C02" />
+            <MaterialIcons name="arrow-forward" size={16} color="#1976D2" />
           </View>
         </View>
       </View>
@@ -165,7 +165,7 @@ function HomeContent({ navigation, user }) {
   if (loading && !refreshing) {
     return (
       <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color="#FC4C02" />
+        <ActivityIndicator size="large" color="#2E7D32" />
         <Text style={styles.loadingText}>Loading hiking spots...</Text>
       </View>
     )
@@ -173,7 +173,7 @@ function HomeContent({ navigation, user }) {
 
   return (
     <SafeAreaView style={styles.safeArea}>
-      <StatusBar barStyle="light-content" backgroundColor="#FC4C02" />
+      <StatusBar barStyle="light-content" backgroundColor="#2E7D32" />
       
       <View style={styles.header}>
         <View>
@@ -193,8 +193,8 @@ function HomeContent({ navigation, user }) {
           <RefreshControl 
             refreshing={refreshing} 
             onRefresh={onRefresh}
-            colors={["#FC4C02"]}
-            tintColor="#FC4C02"
+            colors={["#2E7D32"]}
+            tintColor="#2E7D32"
           />
         }
       >
@@ -235,7 +235,7 @@ function HomeContent({ navigation, user }) {
 function ProfileScreen({ user, profile, signOut }) {
   return (
     <SafeAreaView style={styles.profileContainer}>
-      <StatusBar barStyle="light-content" backgroundColor="#FC4C02" />
+      <StatusBar barStyle="light-content" backgroundColor="#2E7D32" />
       
       <View style={styles.profileHeader}>
         <Text style={styles.profileHeaderTitle}>Profile</Text>
@@ -322,7 +322,7 @@ export default function HomeScreen({ navigation }) {
   if (loading) {
     return (
       <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color="#FC4C02" />
+        <ActivityIndicator size="large" color="#2E7D32" />
         <Text style={styles.loadingText}>Loading...</Text>
       </View>
     )
@@ -331,7 +331,7 @@ export default function HomeScreen({ navigation }) {
   return (
     <Tab.Navigator
       screenOptions={{
-        tabBarActiveTintColor: '#FC4C02',
+        tabBarActiveTintColor: '#2E7D32',
         tabBarInactiveTintColor: '#999',
         headerShown: false,
         tabBarStyle: {
@@ -413,7 +413,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingTop: Platform.OS === 'android' ? 50 : 10,
     paddingBottom: 20,
-    backgroundColor: '#FC4C02',
+    backgroundColor: '#2E7D32', // Changed from #FC4C02 to Forest Green
   },
   headerTitle: {
     fontSize: 28,
@@ -455,7 +455,7 @@ const styles = StyleSheet.create({
   },
   seeAllText: {
     fontSize: 14,
-    color: '#FC4C02',
+    color: '#1976D2', // Changed from #FC4C02 to Mountain Blue
     fontWeight: '500',
   },
   cardsContainer: {
@@ -482,7 +482,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: 12,
     left: 12,
-    backgroundColor: 'rgba(252, 76, 2, 0.9)',
+    backgroundColor: 'rgba(46, 125, 50, 0.9)', // Changed from Strava orange to Forest Green
     paddingHorizontal: 10,
     paddingVertical: 4,
     borderRadius: 30,
@@ -540,7 +540,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   exploreButtonText: {
-    color: '#FC4C02',
+    color: '#1976D2', // Changed from #FC4C02 to Mountain Blue
     fontSize: 14,
     fontWeight: '600',
     marginRight: 4,
@@ -559,7 +559,7 @@ const styles = StyleSheet.create({
   retryButton: {
     paddingHorizontal: 20,
     paddingVertical: 10,
-    backgroundColor: '#FC4C02',
+    backgroundColor: '#2E7D32', // Changed from #FC4C02 to Forest Green
     borderRadius: 30,
   },
   retryButtonText: {
@@ -573,7 +573,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#FFFFFF',
   },
   profileHeader: {
-    backgroundColor: '#FC4C02',
+    backgroundColor: '#2E7D32', // Changed from #FC4C02 to Forest Green
     paddingHorizontal: 20,
     paddingTop: Platform.OS === 'android' ? 50 : 10,
     paddingBottom: 20,
@@ -593,7 +593,7 @@ const styles = StyleSheet.create({
     width: 100,
     height: 100,
     borderRadius: 50,
-    backgroundColor: '#FC4C02',
+    backgroundColor: '#2E7D32', // Changed from #FC4C02 to Forest Green
     justifyContent: 'center',
     alignItems: 'center',
     marginBottom: 20,
@@ -636,7 +636,7 @@ const styles = StyleSheet.create({
   },
   signOutButton: {
     flexDirection: 'row',
-    backgroundColor: '#FC4C02',
+    backgroundColor: '#2E7D32', // Changed from #FC4C02 to Forest Green
     paddingHorizontal: 30,
     paddingVertical: 12,
     borderRadius: 30,
