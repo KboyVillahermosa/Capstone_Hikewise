@@ -173,16 +173,12 @@ function HomeContent({ navigation, user }) {
 
   return (
     <SafeAreaView style={styles.safeArea}>
-      <StatusBar barStyle="light-content" backgroundColor="#2E7D32" />
+      <StatusBar barStyle="dark-content" backgroundColor="#FFFFFF" />
       
       <View style={styles.header}>
-        <View>
-          <Text style={styles.headerTitle}>Discover</Text>
-          <Text style={styles.headerSubtitle}>Explore Cebu's best hiking trails</Text>
-        </View>
-        <TouchableOpacity style={styles.profileIcon}>
-          <MaterialIcons name="account-circle" size={32} color="white" />
-        </TouchableOpacity>
+        <Text style={styles.headerTagline}>HikeWise</Text>
+        <Text style={styles.headerTitle}>Discover</Text>
+        <Text style={styles.headerSubtitle}>Explore Cebu's best hiking trails</Text>
       </View>
       
       <ScrollView 
@@ -239,7 +235,47 @@ function HomeContent({ navigation, user }) {
   )
 }
 
-function ProfileScreen({ user, profile, signOut }) {
+function ProfileScreen({ user, profile, signOut, navigation }) {
+  const [avatarUrl, setAvatarUrl] = useState(null);
+  const [bio, setBio] = useState('');
+
+  useEffect(() => {
+    fetchProfile();
+  }, []);
+
+  async function fetchProfile() {
+    try {
+      if (!user) return;
+      
+      // Fetch user profile with bio and avatar_url
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('username, bio, avatar_url')
+        .eq('id', user.id)
+        .single();
+        
+      if (error && error.code !== 'PGRST116') {
+        console.error('Error fetching profile:', error);
+        return;
+      }
+      
+      if (data) {
+        setBio(data.bio || 'No bio yet. Tap edit to add your bio.');
+        setAvatarUrl(data.avatar_url);
+      }
+    } catch (error) {
+      console.error('Error:', error.message);
+    }
+  }
+
+  const navigateToEditProfile = () => {
+    navigation.navigate('EditProfile');
+  };
+
+  const navigateToChangePassword = () => {
+    navigation.navigate('ChangePassword');
+  };
+
   return (
     <SafeAreaView style={styles.profileContainer}>
       <StatusBar barStyle="light-content" backgroundColor="#2E7D32" />
@@ -248,38 +284,77 @@ function ProfileScreen({ user, profile, signOut }) {
         <Text style={styles.profileHeaderTitle}>Profile</Text>
       </View>
       
-      <View style={styles.profileContent}>
-        <View style={styles.profileAvatar}>
-          <Text style={styles.profileAvatarText}>
-            {profile?.username ? profile.username.charAt(0).toUpperCase() : user?.email.charAt(0).toUpperCase()}
-          </Text>
+      <ScrollView style={styles.profileScrollView}>
+        <View style={styles.profileContent}>
+          {/* Profile image */}
+          {avatarUrl ? (
+            <Image 
+              source={{ uri: avatarUrl }} 
+              style={styles.profileAvatar}
+              onError={() => setAvatarUrl(null)}
+            />
+          ) : (
+            <View style={styles.profileAvatar}>
+              <Text style={styles.profileAvatarText}>
+                {profile?.username ? profile.username.charAt(0).toUpperCase() : user?.email.charAt(0).toUpperCase()}
+              </Text>
+            </View>
+          )}
+          
+          <Text style={styles.profileUsername}>{profile?.username || "Username Not Set"}</Text>
+          <Text style={styles.profileEmail}>{user?.email}</Text>
+          
+          {/* Bio section */}
+          <View style={styles.bioContainer}>
+            <Text style={styles.bioTitle}>About Me</Text>
+            <Text style={styles.bioText}>{bio}</Text>
+          </View>
+          
+          <View style={styles.profileStats}>
+            <View style={styles.statItem}>
+              <Text style={styles.statNumber}>0</Text>
+              <Text style={styles.statLabel}>Hikes</Text>
+            </View>
+            <View style={styles.statItem}>
+              <Text style={styles.statNumber}>0</Text>
+              <Text style={styles.statLabel}>Reviews</Text>
+            </View>
+            <View style={styles.statItem}>
+              <Text style={styles.statNumber}>0</Text>
+              <Text style={styles.statLabel}>Favorites</Text>
+            </View>
+          </View>
+          
+          {/* Edit Profile Button */}
+          <TouchableOpacity 
+            style={styles.profileActionButton}
+            onPress={navigateToEditProfile}
+          >
+            <Ionicons name="create-outline" size={20} color="white" />
+            <Text style={styles.profileActionButtonText}>Edit Profile</Text>
+          </TouchableOpacity>
+          
+          {/* Change Password Button */}
+          <TouchableOpacity 
+            style={styles.profileActionButton}
+            onPress={navigateToChangePassword}
+          >
+            <Ionicons name="key-outline" size={20} color="white" />
+            <Text style={styles.profileActionButtonText}>Change Password</Text>
+          </TouchableOpacity>
+          
+          {/* Sign Out Button */}
+          <TouchableOpacity 
+            style={[styles.profileActionButton, styles.signOutButton]} 
+            onPress={signOut}
+          >
+            <MaterialIcons name="logout" size={20} color="white" />
+            <Text style={styles.signOutButtonText}>Sign Out</Text>
+          </TouchableOpacity>
         </View>
-        
-        <Text style={styles.profileUsername}>{profile?.username || "Username Not Set"}</Text>
-        <Text style={styles.profileEmail}>{user?.email}</Text>
-        
-        <View style={styles.profileStats}>
-          <View style={styles.statItem}>
-            <Text style={styles.statNumber}>0</Text>
-            <Text style={styles.statLabel}>Hikes</Text>
-          </View>
-          <View style={styles.statItem}>
-            <Text style={styles.statNumber}>0</Text>
-            <Text style={styles.statLabel}>Reviews</Text>
-          </View>
-          <View style={styles.statItem}>
-            <Text style={styles.statNumber}>0</Text>
-            <Text style={styles.statLabel}>Favorites</Text>
-          </View>
-        </View>
-        
-        <TouchableOpacity style={styles.signOutButton} onPress={signOut}>
-          <MaterialIcons name="logout" size={20} color="white" />
-          <Text style={styles.signOutButtonText}>Sign Out</Text>
-        </TouchableOpacity>
-      </View>
+      </ScrollView>
     </SafeAreaView>
-  )
+  );
 }
 
 export default function HomeScreen({ navigation }) {
@@ -338,20 +413,23 @@ export default function HomeScreen({ navigation }) {
   return (
     <Tab.Navigator
       screenOptions={{
-        tabBarActiveTintColor: '#2E7D32',
-        tabBarInactiveTintColor: '#999',
+        tabBarActiveTintColor: '#388E3C', // Dark green for active tabs
+        tabBarInactiveTintColor: '#9E9E9E', // Medium gray for inactive
         headerShown: false,
         tabBarStyle: {
           elevation: 0,
-          borderTopWidth: 1,
-          borderTopColor: '#F0F0F0',
+          borderTopWidth: 0, 
           height: 60,
           paddingBottom: 10,
           paddingTop: 5,
+          backgroundColor: '#FFFFFF',
+          shadowColor: 'transparent',
         },
         tabBarLabelStyle: {
-          fontSize: 12,
+          fontSize: 11,
           fontWeight: '500',
+          marginTop: -5,
+          fontFamily: Platform.OS === 'ios' ? 'System' : 'sans-serif-medium',
         },
       }}
     >
@@ -390,6 +468,7 @@ export default function HomeScreen({ navigation }) {
             user={user} 
             profile={profile} 
             signOut={signOut} 
+            navigation={navigation}
           />
         )}
       </Tab.Screen>
@@ -400,7 +479,7 @@ export default function HomeScreen({ navigation }) {
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: '#FFFFFF', // Pure white for minimalist feel
   },
   loadingContainer: {
     flex: 1,
@@ -410,28 +489,45 @@ const styles = StyleSheet.create({
   },
   loadingText: {
     marginTop: 12,
-    fontSize: 16,
-    color: '#666',
+    fontSize: 15,
+    color: '#9E9E9E',
+    fontFamily: Platform.OS === 'ios' ? 'System' : 'sans-serif-light',
   },
   header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
     paddingHorizontal: 20,
-    paddingTop: Platform.OS === 'android' ? 50 : 10,
-    paddingBottom: 20,
-    backgroundColor: '#2E7D32', // Changed from #FC4C02 to Forest Green
+    paddingTop: Platform.OS === 'android' ? 50 : 30,
+    paddingBottom: 30,
+    backgroundColor: '#FFFFFF',
+    alignItems: 'center',
+    borderBottomWidth: 1,
+    borderBottomColor: '#F0F0F0',
   },
   headerTitle: {
-    fontSize: 28,
-    fontWeight: 'bold',
-    color: 'white',
+    fontSize: 40, // Even larger
+    fontWeight: '700',
+    color: '#212121', // Almost black
+    marginBottom: 8,
+    textAlign: 'center',
+    letterSpacing: -1, // Tighter letter spacing for modern look
+    fontFamily: Platform.OS === 'ios' ? 'System' : 'sans-serif-medium',
+  },
+  headerTagline: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#388E3C', // Darker green for better readability
+    marginBottom: 8,
+    textAlign: 'center',
+    letterSpacing: 1, // Wider letter spacing for tagline
+    textTransform: 'uppercase', // Uppercase for modern look
+    fontFamily: Platform.OS === 'ios' ? 'System' : 'sans-serif-medium',
   },
   headerSubtitle: {
-    fontSize: 14,
-    color: 'white',
-    opacity: 0.9,
-    marginTop: 2,
+    fontSize: 15,
+    color: '#9E9E9E', // Medium gray
+    textAlign: 'center',
+    maxWidth: '80%',
+    lineHeight: 22,
+    fontFamily: Platform.OS === 'ios' ? 'System' : 'sans-serif-light',
   },
   profileIcon: {
     width: 40,
@@ -452,18 +548,20 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     paddingHorizontal: 20,
-    paddingTop: 20,
-    paddingBottom: 15,
+    paddingTop: 24,
+    paddingBottom: 16,
   },
   sectionTitle: {
     fontSize: 18,
-    fontWeight: 'bold',
-    color: '#333',
+    fontWeight: '600',
+    color: '#212121',
+    fontFamily: Platform.OS === 'ios' ? 'System' : 'sans-serif-medium',
   },
   seeAllText: {
-    fontSize: 14,
-    color: '#1976D2', // Changed from #FC4C02 to Mountain Blue
+    fontSize: 13,
+    color: '#388E3C', // Darker green
     fontWeight: '500',
+    fontFamily: Platform.OS === 'ios' ? 'System' : 'sans-serif-medium',
   },
   cardsContainer: {
     paddingHorizontal: 20,
@@ -472,46 +570,48 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
     borderRadius: 12,
     overflow: 'hidden',
-    marginBottom: 20,
-    elevation: 3,
+    marginBottom: 24,
+    elevation: 0, // Remove elevation for flatter design
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 8,
-    borderWidth: 1,
-    borderColor: '#F0F0F0',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.05,
+    shadowRadius: 5,
+    borderWidth: 1, // Add subtle border
+    borderColor: '#F5F5F5', // Very light border
   },
   cardImage: {
-    height: 180,
+    height: 200, // Taller image
     width: '100%',
   },
   cardBadge: {
     position: 'absolute',
-    top: 12,
-    left: 12,
-    backgroundColor: 'rgba(46, 125, 50, 0.9)', // Changed from Strava orange to Forest Green
-    paddingHorizontal: 10,
-    paddingVertical: 4,
+    top: 16,
+    left: 16,
+    backgroundColor: 'rgba(33, 33, 33, 0.85)', // Dark black with transparency
+    paddingHorizontal: 12,
+    paddingVertical: 6,
     borderRadius: 30,
   },
   cardBadgeText: {
     color: 'white',
     fontSize: 12,
-    fontWeight: 'bold',
+    fontWeight: '500',
+    fontFamily: Platform.OS === 'ios' ? 'System' : 'sans-serif-medium',
   },
   cardContent: {
-    padding: 16,
+    padding: 20,
   },
   cardTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: '#333',
+    fontSize: 20,
+    fontWeight: '600',
+    color: '#212121',
     marginBottom: 8,
+    fontFamily: Platform.OS === 'ios' ? 'System' : 'sans-serif-medium',
   },
   cardDetails: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginBottom: 10,
+    marginBottom: 12,
   },
   ratingContainer: {
     flexDirection: 'row',
@@ -519,23 +619,26 @@ const styles = StyleSheet.create({
   },
   cardRatingCount: {
     marginLeft: 5,
-    color: '#666',
+    color: '#9E9E9E',
     fontSize: 12,
+    fontFamily: Platform.OS === 'ios' ? 'System' : 'sans-serif',
   },
   locationContainer: {
     flexDirection: 'row',
     alignItems: 'center',
   },
   cardLocation: {
-    color: '#666',
+    color: '#9E9E9E',
     fontSize: 12,
     marginLeft: 4,
+    fontFamily: Platform.OS === 'ios' ? 'System' : 'sans-serif',
   },
   cardDescription: {
-    color: '#666',
+    color: '#616161',
     fontSize: 14,
-    lineHeight: 20,
-    marginBottom: 12,
+    lineHeight: 22,
+    marginBottom: 16,
+    fontFamily: Platform.OS === 'ios' ? 'System' : 'sans-serif-light',
   },
   cardFooter: {
     flexDirection: 'row',
@@ -547,10 +650,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   exploreButtonText: {
-    color: '#1976D2', // Changed from #FC4C02 to Mountain Blue
+    color: '#388E3C', // Darker green
     fontSize: 14,
     fontWeight: '600',
-    marginRight: 4,
+    marginRight: 6,
+    fontFamily: Platform.OS === 'ios' ? 'System' : 'sans-serif-medium',
   },
   emptyContainer: {
     padding: 40,
@@ -559,19 +663,21 @@ const styles = StyleSheet.create({
   },
   emptyText: {
     fontSize: 16,
-    color: '#666',
-    marginTop: 10,
-    marginBottom: 20,
+    color: '#9E9E9E',
+    marginTop: 16,
+    marginBottom: 24,
+    fontFamily: Platform.OS === 'ios' ? 'System' : 'sans-serif-light',
   },
   retryButton: {
-    paddingHorizontal: 20,
-    paddingVertical: 10,
-    backgroundColor: '#2E7D32', // Changed from #FC4C02 to Forest Green
+    paddingHorizontal: 24,
+    paddingVertical: 12,
+    backgroundColor: '#388E3C', // Darker green instead of black
     borderRadius: 30,
   },
   retryButtonText: {
     color: 'white',
-    fontWeight: 'bold',
+    fontWeight: '600',
+    fontFamily: Platform.OS === 'ios' ? 'System' : 'sans-serif-medium',
   },
   
   // Profile Screen Styles
@@ -580,16 +686,22 @@ const styles = StyleSheet.create({
     backgroundColor: '#FFFFFF',
   },
   profileHeader: {
-    backgroundColor: '#2E7D32', // Changed from #FC4C02 to Forest Green
+    backgroundColor: '#FFFFFF', // White header for minimalist look
     paddingHorizontal: 20,
-    paddingTop: Platform.OS === 'android' ? 50 : 10,
+    paddingTop: Platform.OS === 'android' ? 50 : 30,
     paddingBottom: 20,
     alignItems: 'center',
+    borderBottomWidth: 1,
+    borderBottomColor: '#F0F0F0',
   },
   profileHeaderTitle: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    color: 'white',
+    fontSize: 24,
+    fontWeight: '600',
+    color: '#212121',
+    fontFamily: Platform.OS === 'ios' ? 'System' : 'sans-serif-medium',
+  },
+  profileScrollView: {
+    flex: 1,
   },
   profileContent: {
     flex: 1,
@@ -600,26 +712,53 @@ const styles = StyleSheet.create({
     width: 100,
     height: 100,
     borderRadius: 50,
-    backgroundColor: '#2E7D32', // Changed from #FC4C02 to Forest Green
+    backgroundColor: '#EEEEEE', // Light gray background for avatar
     justifyContent: 'center',
     alignItems: 'center',
     marginBottom: 20,
+    borderWidth: 1,
+    borderColor: '#F0F0F0',
   },
   profileAvatarText: {
     fontSize: 42,
-    fontWeight: 'bold',
-    color: 'white',
+    fontWeight: '600',
+    color: '#212121',
+    fontFamily: Platform.OS === 'ios' ? 'System' : 'sans-serif-medium',
   },
   profileUsername: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: '#333',
+    fontSize: 26,
+    fontWeight: '600',
+    color: '#212121',
     marginBottom: 5,
+    fontFamily: Platform.OS === 'ios' ? 'System' : 'sans-serif-medium',
   },
   profileEmail: {
     fontSize: 16,
-    color: '#666',
+    color: '#9E9E9E',
     marginBottom: 30,
+    fontFamily: Platform.OS === 'ios' ? 'System' : 'sans-serif-light',
+  },
+  bioContainer: {
+    width: '85%',
+    backgroundColor: '#FFFFFF',
+    borderRadius: 12,
+    padding: 20,
+    marginVertical: 20,
+    borderWidth: 1,
+    borderColor: '#F0F0F0',
+  },
+  bioTitle: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#388E3C', // Darker green
+    marginBottom: 12,
+    fontFamily: Platform.OS === 'ios' ? 'System' : 'sans-serif-medium',
+  },
+  bioText: {
+    fontSize: 15,
+    color: '#616161',
+    lineHeight: 22,
+    fontFamily: Platform.OS === 'ios' ? 'System' : 'sans-serif-light',
   },
   profileStats: {
     flexDirection: 'row',
@@ -632,43 +771,58 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   statNumber: {
-    fontSize: 22,
-    fontWeight: 'bold',
-    color: '#333',
+    fontSize: 24,
+    fontWeight: '600',
+    color: '#212121',
+    fontFamily: Platform.OS === 'ios' ? 'System' : 'sans-serif-medium',
   },
   statLabel: {
     fontSize: 14,
-    color: '#666',
+    color: '#9E9E9E',
     marginTop: 5,
+    fontFamily: Platform.OS === 'ios' ? 'System' : 'sans-serif-light',
   },
-  signOutButton: {
+  profileActionButton: {
     flexDirection: 'row',
-    backgroundColor: '#2E7D32', // Changed from #FC4C02 to Forest Green
-    paddingHorizontal: 30,
-    paddingVertical: 12,
+    backgroundColor: '#388E3C', // Darker green for buttons
+    paddingHorizontal: 24,
+    paddingVertical: 14,
     borderRadius: 30,
     alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 16,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.05,
+    shadowRadius: 4,
+    elevation: 1,
+    width: '85%',
   },
-  signOutButtonText: {
+  profileActionButtonText: {
     color: 'white',
-    fontWeight: 'bold',
+    fontWeight: '600',
     fontSize: 16,
     marginLeft: 8,
+    fontFamily: Platform.OS === 'ios' ? 'System' : 'sans-serif-medium',
+  },
+  signOutButton: {
+    marginTop: 20,
+    backgroundColor: '#F44336', // Red for caution
   },
   fabButton: {
     position: 'absolute',
-    bottom: 20,
-    right: 20,
-    backgroundColor: '#2E7D32',
-    width: 60,
-    height: 60,
-    borderRadius: 30,
+    bottom: 24,
+    right: 24,
+    backgroundColor: '#388E3C', // Darker green for floating action button
+    width: 56,
+    height: 56,
+    borderRadius: 28,
     justifyContent: 'center',
     alignItems: 'center',
-    elevation: 5,
+    elevation: 2,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.3,
+    shadowOpacity: 0.15,
     shadowRadius: 3,
   },
 })

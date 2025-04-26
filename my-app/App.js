@@ -20,6 +20,7 @@ import PostsScreen from './screens/PostsScreen';
 import CommentsScreen from './screens/CommentsScreen';
 import ProfileScreen from './screens/ProfileScreen';
 import EditProfileScreen from './screens/EditProfileScreen';
+import ChangePasswordScreen from './screens/ChangePasswordScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -105,7 +106,7 @@ export default function App() {
   console.log("Available screens in navigator:", [
     "Home", "HikingSpotDetails", "ActivityDetails", 
     "Tracking", "HikeHistory", "Login", "Register", "EmailConfirmation",
-    "Posts", "Comments", "Profile", "EditProfile"
+    "Posts", "Comments", "Profile", "EditProfile", "ChangePassword"
   ]);
 
   return (
@@ -118,6 +119,7 @@ export default function App() {
             <Stack.Screen name="Comments" component={CommentsScreen} options={{ headerShown: false }} />
             <Stack.Screen name="Profile" component={ProfileScreen} options={{ headerShown: false }} />
             <Stack.Screen name="EditProfile" component={EditProfileScreen} options={{ headerShown: false }} />
+            <Stack.Screen name="ChangePassword" component={ChangePasswordScreen} options={{ headerShown: false }} />
             <Stack.Screen 
               name="HikingSpotDetails" 
               component={HikingSpotDetailsScreen} 
