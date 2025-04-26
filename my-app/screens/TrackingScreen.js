@@ -543,17 +543,17 @@ export default function TrackingScreen({ navigation }) {
             <Text style={styles.pausedText}>PAUSED</Text>
             <View style={styles.pausedStatsContainer}>
               <View style={styles.pausedStatRow}>
-                <Ionicons name="speedometer-outline" size={20} color="#FC4C02" />
+                <Ionicons name="speedometer-outline" size={20} color="#388E3C" />
                 <Text style={styles.pausedStat}>{formatDistance(stats.distance)}</Text>
               </View>
               
               <View style={styles.pausedStatRow}>
-                <Ionicons name="time-outline" size={20} color="#FC4C02" />
+                <Ionicons name="time-outline" size={20} color="#388E3C" />
                 <Text style={styles.pausedStat}>{formatDuration(stats.duration)}</Text>
               </View>
               
               <View style={styles.pausedStatRow}>
-                <MaterialIcons name="speed" size={20} color="#FC4C02" />
+                <MaterialIcons name="speed" size={20} color="#388E3C" />
                 <Text style={styles.pausedStat}>{formatPace(stats.pace)}</Text>
               </View>
             </View>
@@ -576,7 +576,7 @@ export default function TrackingScreen({ navigation }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#2E7D32',
+    backgroundColor: '#212121', // Dark background for minimalist look
   },
   mapContainer: {
     flex: 1,
@@ -589,71 +589,76 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#222',
+    backgroundColor: '#212121', // Dark background
   },
   loadingText: {
-    color: '#FFF',
+    color: '#FFFFFF',
     fontSize: 16,
     fontWeight: '500',
+    fontFamily: Platform.OS === 'ios' ? 'System' : 'sans-serif-medium',
   },
   mapOverlay: {
     position: 'absolute',
     top: Platform.OS === 'ios' ? 50 : 40,
     alignSelf: 'center',
-    backgroundColor: 'rgba(0, 0, 0, 0.7)',
+    backgroundColor: 'rgba(33, 33, 33, 0.85)', // Dark with transparency
     paddingVertical: 8,
     paddingHorizontal: 16,
     borderRadius: 20,
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.2)',
+    borderWidth: 0, // Remove border for minimal look
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.15,
+    shadowRadius: 3,
+    elevation: 2,
   },
   mapOverlayText: {
     color: 'white',
     fontWeight: '600',
     fontSize: 16,
+    fontFamily: Platform.OS === 'ios' ? 'System' : 'sans-serif-medium',
   },
   statsContainer: {
-    backgroundColor: 'rgba(0, 0, 0, 0.9)',
-    paddingVertical: 15,
+    backgroundColor: '#212121', // Dark background
+    paddingVertical: 16,
     paddingHorizontal: 20,
     borderTopWidth: 1,
-    borderTopColor: 'rgba(255, 255, 255, 0.1)',
+    borderTopColor: 'rgba(255, 255, 255, 0.05)', // Very subtle border
   },
   buttonContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingVertical: 15,
+    paddingVertical: 16,
     paddingHorizontal: 20,
-    backgroundColor: '#000',
-    borderTopWidth: 1,
-    borderTopColor: 'rgba(255, 255, 255, 0.05)',
+    backgroundColor: '#181818', // Even darker background for contrast
+    borderTopWidth: 0, // Remove border for cleaner look
   },
   backButton: {
     width: 44,
     height: 44,
     borderRadius: 22,
-    backgroundColor: 'rgba(255, 255, 255, 0.15)',
+    backgroundColor: 'rgba(255, 255, 255, 0.1)', // Very subtle background
     justifyContent: 'center',
     alignItems: 'center',
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.2,
-    shadowRadius: 3,
-    elevation: 2,
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.1,
+    shadowRadius: 2,
+    elevation: 1,
   },
   trackButton: {
     flexDirection: 'row',
-    backgroundColor: '#FC4C02',
+    backgroundColor: '#388E3C', // Green for primary action
     paddingHorizontal: 24,
     paddingVertical: 14,
     borderRadius: 30,
     alignItems: 'center',
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.3,
-    shadowRadius: 4,
-    elevation: 3,
+    shadowOpacity: 0.15,
+    shadowRadius: 3,
+    elevation: 2,
   },
   trackingButtonsContainer: {
     flexDirection: 'row',
@@ -667,31 +672,33 @@ const styles = StyleSheet.create({
     borderRadius: 25,
     marginLeft: 10,
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.2,
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.1,
     shadowRadius: 2,
-    elevation: 2,
+    elevation: 1,
   },
   actionButtonText: {
     color: 'white',
     fontWeight: '600',
     marginLeft: 6,
     fontSize: 14,
+    fontFamily: Platform.OS === 'ios' ? 'System' : 'sans-serif-medium',
   },
   pauseButton: {
-    backgroundColor: '#FFA000',
+    backgroundColor: '#FFA000', // Amber for pause
   },
   resumeButton: {
-    backgroundColor: '#4CAF50',
+    backgroundColor: '#388E3C', // Green for resume
   },
   stopButton: {
-    backgroundColor: '#D32F2F',
+    backgroundColor: '#F44336', // Red for stop
   },
   trackButtonText: {
     color: 'white',
     fontWeight: '600',
     fontSize: 16,
     marginRight: 8,
+    fontFamily: Platform.OS === 'ios' ? 'System' : 'sans-serif-medium',
   },
   modalContainer: {
     flex: 1,
@@ -707,32 +714,33 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 8,
-    elevation: 5,
+    shadowOpacity: 0.2,
+    shadowRadius: 6,
+    elevation: 4,
   },
   modalHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    backgroundColor: '#f8f8f8',
-    paddingVertical: 16,
+    backgroundColor: '#f9f9f9',
+    paddingVertical: 18,
     paddingHorizontal: 20,
     borderBottomWidth: 1,
-    borderBottomColor: '#eaeaea',
+    borderBottomColor: '#eeeeee',
   },
   modalTitle: {
     fontSize: 20,
-    fontWeight: 'bold',
-    color: '#333',
+    fontWeight: '600',
+    color: '#212121', // Dark text
+    fontFamily: Platform.OS === 'ios' ? 'System' : 'sans-serif-medium',
   },
   modalStatsContainer: {
-    padding: 20,
+    padding: 24,
   },
   modalStatRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginBottom: 20,
+    marginBottom: 24,
   },
   modalStatItem: {
     alignItems: 'center',
@@ -740,19 +748,21 @@ const styles = StyleSheet.create({
   },
   modalStatLabel: {
     fontSize: 14,
-    color: '#666',
+    color: '#757575', // Medium gray
     marginTop: 4,
+    fontFamily: Platform.OS === 'ios' ? 'System' : 'sans-serif',
   },
   modalStatValue: {
     fontSize: 18,
-    fontWeight: 'bold',
-    color: '#333',
-    marginTop: 4,
+    fontWeight: '600',
+    color: '#212121', // Dark text
+    marginTop: 6,
+    fontFamily: Platform.OS === 'ios' ? 'System' : 'sans-serif-medium',
   },
   modalButtonsContainer: {
     flexDirection: 'row',
     borderTopWidth: 1,
-    borderTopColor: '#eaeaea',
+    borderTopColor: '#eeeeee',
   },
   modalButton: {
     flex: 1,
@@ -760,24 +770,26 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   discardButton: {
-    backgroundColor: '#f8f8f8',
+    backgroundColor: '#f9f9f9',
     borderRightWidth: 0.5,
-    borderRightColor: '#eaeaea',
+    borderRightColor: '#eeeeee',
   },
   saveButton: {
-    backgroundColor: '#FC4C02',
+    backgroundColor: '#388E3C', // Green for save
     borderLeftWidth: 0.5,
-    borderLeftColor: '#eaeaea',
+    borderLeftColor: '#eeeeee',
   },
   discardButtonText: {
-    color: '#666',
+    color: '#616161', // Medium gray
     fontWeight: '600',
     fontSize: 16,
+    fontFamily: Platform.OS === 'ios' ? 'System' : 'sans-serif-medium',
   },
   saveButtonText: {
     color: 'white',
     fontWeight: '600',
     fontSize: 16,
+    fontFamily: Platform.OS === 'ios' ? 'System' : 'sans-serif-medium',
   },
   pausedOverlay: {
     position: 'absolute',
@@ -791,29 +803,29 @@ const styles = StyleSheet.create({
     zIndex: 1000,
   },
   pausedContent: {
-    width: '80%',
+    width: '85%',
     alignItems: 'center',
-    backgroundColor: 'rgba(30, 30, 30, 0.9)',
+    backgroundColor: 'rgba(33, 33, 33, 0.95)', // Dark with slight transparency
     borderRadius: 20,
-    padding: 25,
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.1)',
+    padding: 28,
+    borderWidth: 0, // Remove border for minimal look
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.5,
+    shadowOpacity: 0.3,
     shadowRadius: 8,
     elevation: 5,
   },
   pausedText: {
     color: 'white',
-    fontSize: 32,
-    fontWeight: 'bold',
-    marginBottom: 25,
-    letterSpacing: 3,
+    fontSize: 28,
+    fontWeight: '700',
+    marginBottom: 28,
+    letterSpacing: 2,
+    fontFamily: Platform.OS === 'ios' ? 'System' : 'sans-serif-medium',
   },
   pausedStatsContainer: {
-    backgroundColor: 'rgba(255, 255, 255, 0.08)',
-    borderRadius: 12, 
+    backgroundColor: 'rgba(255, 255, 255, 0.05)', // Very subtle background
+    borderRadius: 16, 
     padding: 20,
     marginBottom: 30,
     width: '100%',
@@ -821,32 +833,34 @@ const styles = StyleSheet.create({
   pausedStatRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginVertical: 6,
+    marginVertical: 8,
   },
   pausedStat: {
     color: 'white',
     fontSize: 18,
     fontWeight: '500',
-    marginLeft: 12,
+    marginLeft: 14,
+    fontFamily: Platform.OS === 'ios' ? 'System' : 'sans-serif-medium',
   },
   resumeOverlayButton: {
     flexDirection: 'row',
-    backgroundColor: '#4CAF50',
+    backgroundColor: '#388E3C', // Green for resume
     paddingHorizontal: 28,
     paddingVertical: 16,
     borderRadius: 30,
     alignItems: 'center',
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 3 },
-    shadowOpacity: 0.4,
-    shadowRadius: 5,
-    elevation: 4,
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
+    elevation: 3,
   },
   resumeButtonText: {
     color: 'white',
-    fontWeight: 'bold',
+    fontWeight: '600',
     fontSize: 16,
     marginLeft: 8,
     letterSpacing: 1,
+    fontFamily: Platform.OS === 'ios' ? 'System' : 'sans-serif-medium',
   }
 })

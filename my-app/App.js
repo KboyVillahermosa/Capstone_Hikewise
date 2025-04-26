@@ -21,6 +21,7 @@ import CommentsScreen from './screens/CommentsScreen';
 import ProfileScreen from './screens/ProfileScreen';
 import EditProfileScreen from './screens/EditProfileScreen';
 import ChangePasswordScreen from './screens/ChangePasswordScreen';
+import MediaViewerScreen from './screens/MediaViewerScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -106,7 +107,7 @@ export default function App() {
   console.log("Available screens in navigator:", [
     "Home", "HikingSpotDetails", "ActivityDetails", 
     "Tracking", "HikeHistory", "Login", "Register", "EmailConfirmation",
-    "Posts", "Comments", "Profile", "EditProfile", "ChangePassword"
+    "Posts", "Comments", "Profile", "EditProfile", "ChangePassword", "MediaViewer"
   ]);
 
   return (
@@ -132,6 +133,11 @@ export default function App() {
             />
             <Stack.Screen name="Tracking" component={TrackingScreen} options={{ headerShown: false }} />
             <Stack.Screen name="HikeHistory" component={HikeHistoryScreen} options={{ headerShown: false }} />
+            <Stack.Screen 
+              name="MediaViewer" 
+              component={MediaViewerScreen} 
+              options={{ headerShown: false }} 
+            />
           </>
         ) : (
           <>
