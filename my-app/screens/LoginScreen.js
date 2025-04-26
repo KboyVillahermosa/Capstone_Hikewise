@@ -104,7 +104,7 @@ export default function LoginScreen({ navigation }) {
             <View style={styles.logoContainer}>
               <View style={styles.logoCircle}>
                 <Image 
-                  source={require('../assets/images/logo.png')} 
+                  source={require('../assets/images/ascentra.png')} 
                   style={styles.logo}
                 />
               </View>

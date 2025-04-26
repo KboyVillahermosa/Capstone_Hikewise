@@ -176,7 +176,10 @@ function HomeContent({ navigation, user }) {
       <StatusBar barStyle="dark-content" backgroundColor="#FFFFFF" />
       
       <View style={styles.header}>
-        <Text style={styles.headerTagline}>HikeWise</Text>
+       <Image 
+                        source={require('../assets/images/ascentra.png')} 
+                        style={styles.logo}
+                      />
         <Text style={styles.headerTitle}>Discover</Text>
         <Text style={styles.headerSubtitle}>Explore Cebu's best hiking trails</Text>
       </View>
@@ -824,5 +827,10 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.15,
     shadowRadius: 3,
+  },
+  logo: {
+    width:100, // Smaller logo
+    height: 100, // Smaller logo
+    resizeMode: 'contain',
   },
 })
