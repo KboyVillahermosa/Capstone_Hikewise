@@ -10,7 +10,7 @@ const Stack = createStackNavigator()
 function TrackHomeScreen({ navigation }) {
   return (
     <SafeAreaView style={styles.container}>
-      <StatusBar barStyle="light-content" backgroundColor="#FC4C02" />
+      <StatusBar barStyle="light-content" backgroundColor="#2E7D32" />
       
       <View style={styles.header}>
         <Text style={styles.headerTitle}>Track Activity</Text>
@@ -22,7 +22,7 @@ function TrackHomeScreen({ navigation }) {
           onPress={() => navigation.navigate('TrackingScreen')}
         >
           <View style={styles.iconContainer}>
-            <Ionicons name="footsteps" size={32} color="#FC4C02" />
+            <Ionicons name="footsteps" size={32} color="#2E7D32" />
           </View>
           <View style={styles.optionInfo}>
             <Text style={styles.optionTitle}>Start Tracking</Text>
@@ -36,7 +36,7 @@ function TrackHomeScreen({ navigation }) {
           onPress={() => navigation.navigate('HikeHistory')}
         >
           <View style={styles.iconContainer}>
-            <Ionicons name="time" size={32} color="#FC4C02" />
+            <Ionicons name="time" size={32} color="#2E7D32" />
           </View>
           <View style={styles.optionInfo}>
             <Text style={styles.optionTitle}>Hiking History</Text>
@@ -69,7 +69,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#FFFFFF',
   },
   header: {
-    backgroundColor: '#FC4C02',
+    backgroundColor: '#2E7D32',
     paddingHorizontal: 20,
     paddingTop: Platform.OS === 'android' ? 50 : 10,
     paddingBottom: 20,
@@ -97,7 +97,7 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
     elevation: 2,
     borderWidth: 1,
-    borderColor: '#F0F0F0',
+    borderColor: '#2E7D32',
   },
   iconContainer: {
     width: 50,
