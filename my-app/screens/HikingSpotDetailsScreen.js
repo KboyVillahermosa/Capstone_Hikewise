@@ -20,18 +20,18 @@ import MapView, { Marker } from 'react-native-maps'
 
 // Define a consistent color palette
 const COLORS = {
-  primary: '#FC4C02',       // Orange brand color (Strava orange)
-  secondary: '#FC4C02',     // Changed from green to match Strava orange
-  text: '#333333',          // Dark gray for text
-  textLight: '#666666',     // Lighter gray for secondary text
-  textMuted: '#888888',     // Very light gray for tertiary text
+  primary: '#388E3C',       // Dark green for primary elements
+  secondary: '#388E3C',     // Same green for secondary elements
+  text: '#212121',          // Almost black for text
+  textLight: '#616161',     // Medium gray for secondary text
+  textMuted: '#9E9E9E',     // Light gray for tertiary text
   background: '#FFFFFF',    // White background
-  card: '#F8F8F8',          // Light gray for cards
+  card: '#F9F9F9',          // Very light gray for cards
   separator: '#EEEEEE',     // Very light gray for separators
-  star: '#FC4C02',          // Changed from gold to Strava orange
-  error: '#DC3545',         // Red for errors
-  success: '#28A745',       // Green for success
-  mapPlaceholder: '#F0F0F0' // Light gray for map placeholder
+  star: '#388E3C',          // Green for star ratings
+  error: '#F44336',         // Red for errors
+  success: '#4CAF50',       // Green for success
+  mapPlaceholder: '#F5F5F5' // Light gray for map placeholder
 }
 
 export default function HikingSpotDetailsScreen({ route, navigation }) {
@@ -452,8 +452,9 @@ const styles = StyleSheet.create({
   },
   loadingText: {
     marginTop: 10,
-    fontSize: 16,
+    fontSize: 15,
     color: COLORS.textLight,
+    fontFamily: Platform.OS === 'ios' ? 'System' : 'sans-serif-light',
   },
   errorContainer: {
     flex: 1,
@@ -465,6 +466,7 @@ const styles = StyleSheet.create({
     fontSize: 18,
     color: COLORS.text,
     marginVertical: 20,
+    fontFamily: Platform.OS === 'ios' ? 'System' : 'sans-serif-medium',
   },
   goBackButton: {
     backgroundColor: COLORS.primary,
@@ -473,12 +475,17 @@ const styles = StyleSheet.create({
     borderRadius: 30,
     alignItems: 'center',
     minWidth: 120,
-    elevation: 2,
+    elevation: 1,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.05,
+    shadowRadius: 3,
   },
   goBackButtonText: {
     color: 'white',
-    fontWeight: 'bold',
+    fontWeight: '600',
     fontSize: 16,
+    fontFamily: Platform.OS === 'ios' ? 'System' : 'sans-serif-medium',
   },
   heroImage: {
     height: '100%',
@@ -488,29 +495,31 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: Platform.OS === 'ios' ? 40 : 35,
     left: 20,
-    backgroundColor: 'rgba(0,0,0,0.5)',
+    backgroundColor: 'rgba(0,0,0,0.4)',
     borderRadius: 20,
     padding: 8,
     zIndex: 10,
   },
   contentContainer: {
-    padding: 20,
+    padding: 24,
     backgroundColor: COLORS.background,
-    borderTopLeftRadius: 20,
-    borderTopRightRadius: 20,
-    marginTop: -20,
+    borderTopLeftRadius: 24,
+    borderTopRightRadius: 24,
+    marginTop: -24,
   },
   title: {
-    fontSize: 26,
-    fontWeight: 'bold',
+    fontSize: 28,
+    fontWeight: '700',
     color: COLORS.text,
-    marginBottom: 10,
+    marginBottom: 12,
+    fontFamily: Platform.OS === 'ios' ? 'System' : 'sans-serif-medium',
+    letterSpacing: -0.5,
   },
   ratingRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 10,
+    marginBottom: 12,
   },
   ratingContainer: {
     flexDirection: 'row',
@@ -518,71 +527,81 @@ const styles = StyleSheet.create({
   },
   ratingText: {
     fontSize: 18,
-    fontWeight: 'bold',
+    fontWeight: '600',
     color: COLORS.text,
     marginRight: 5,
+    fontFamily: Platform.OS === 'ios' ? 'System' : 'sans-serif-medium',
   },
   ratingCount: {
     color: COLORS.textLight,
     marginLeft: 5,
     fontSize: 14,
+    fontFamily: Platform.OS === 'ios' ? 'System' : 'sans-serif',
   },
   locationContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 15,
+    marginBottom: 16,
   },
   location: {
     fontSize: 16,
     color: COLORS.textLight,
     marginLeft: 5,
+    fontFamily: Platform.OS === 'ios' ? 'System' : 'sans-serif',
   },
   divider: {
     height: 1,
     backgroundColor: COLORS.separator,
-    marginVertical: 10,
+    marginVertical: 16,
   },
   section: {
-    marginBottom: 25,
+    marginBottom: 28,
   },
   sectionTitle: {
     fontSize: 20,
-    fontWeight: 'bold',
+    fontWeight: '600',
     color: COLORS.text,
-    marginBottom: 15,
+    marginBottom: 16,
+    fontFamily: Platform.OS === 'ios' ? 'System' : 'sans-serif-medium',
   },
   description: {
     fontSize: 16,
     lineHeight: 24,
     color: COLORS.text,
+    fontFamily: Platform.OS === 'ios' ? 'System' : 'sans-serif-light',
   },
   mapSection: {
-    borderRadius: 12,
+    borderRadius: 16,
     overflow: 'hidden',
     backgroundColor: COLORS.card,
-    elevation: 2,
+    elevation: 0,
     shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.05,
     shadowRadius: 3,
+    borderWidth: 1,
+    borderColor: COLORS.separator,
   },
   mapPlaceholder: {
     height: 200,
     backgroundColor: COLORS.mapPlaceholder,
-    borderRadius: 12,
+    borderRadius: 16,
     justifyContent: 'center',
     alignItems: 'center',
     padding: 20,
+    borderWidth: 1,
+    borderColor: COLORS.separator,
   },
   mapPlaceholderText: {
     textAlign: 'center',
     color: COLORS.textMuted,
     marginTop: 10,
+    fontFamily: Platform.OS === 'ios' ? 'System' : 'sans-serif-light',
   },
   map: {
     height: 200,
     width: '100%',
-    borderRadius: 12,
+    borderRadius: 16,
   },
   directionsButton: {
     backgroundColor: COLORS.primary,
@@ -590,32 +609,37 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     padding: 12,
-    margin: 10,
-    borderRadius: 8,
+    margin: 12,
+    borderRadius: 30,
+    elevation: 0,
   },
   directionsButtonText: {
     color: 'white',
-    fontWeight: 'bold',
+    fontWeight: '600',
     marginRight: 8,
+    fontFamily: Platform.OS === 'ios' ? 'System' : 'sans-serif-medium',
   },
   reviewCard: {
     backgroundColor: COLORS.card,
-    borderRadius: 12,
-    padding: 15,
-    elevation: 2,
+    borderRadius: 16,
+    padding: 16,
+    elevation: 0,
     shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.05,
     shadowRadius: 3,
+    borderWidth: 1,
+    borderColor: COLORS.separator,
   },
   ratingLabel: {
     fontSize: 16,
     color: COLORS.text,
     marginBottom: 8,
+    fontFamily: Platform.OS === 'ios' ? 'System' : 'sans-serif-medium',
   },
   ratingStarsContainer: {
     flexDirection: 'row',
-    marginBottom: 15,
+    marginBottom: 16,
   },
   starButton: {
     padding: 2,
@@ -624,19 +648,21 @@ const styles = StyleSheet.create({
   commentInput: {
     borderWidth: 1,
     borderColor: COLORS.separator,
-    borderRadius: 8,
-    padding: 12,
+    borderRadius: 12,
+    padding: 14,
     minHeight: 100,
     fontSize: 16,
-    marginBottom: 15,
+    marginBottom: 16,
     backgroundColor: COLORS.background,
     color: COLORS.text,
+    fontFamily: Platform.OS === 'ios' ? 'System' : 'sans-serif',
   },
   submitButton: {
-    backgroundColor: COLORS.primary, // Changed to Strava orange
-    padding: 15,
-    borderRadius: 8,
+    backgroundColor: COLORS.primary,
+    padding: 14,
+    borderRadius: 30,
     alignItems: 'center',
+    elevation: 0,
   },
   submitButtonDisabled: {
     backgroundColor: COLORS.textMuted,
@@ -648,13 +674,14 @@ const styles = StyleSheet.create({
   },
   submitButtonText: {
     color: 'white',
-    fontWeight: 'bold',
+    fontWeight: '600',
     fontSize: 16,
     marginHorizontal: 8,
+    fontFamily: Platform.OS === 'ios' ? 'System' : 'sans-serif-medium',
   },
   emptyReviewsContainer: {
     backgroundColor: COLORS.card,
-    borderRadius: 12,
+    borderRadius: 16,
     padding: 30,
     alignItems: 'center',
     justifyContent: 'center',
@@ -667,19 +694,20 @@ const styles = StyleSheet.create({
     color: COLORS.textMuted,
     marginTop: 10,
     textAlign: 'center',
+    fontFamily: Platform.OS === 'ios' ? 'System' : 'sans-serif-light',
   },
   reviewsContainer: {
-    gap: 15,
+    gap: 16,
   },
   commentCard: {
     backgroundColor: COLORS.card,
-    borderRadius: 12,
-    padding: 0, // Remove padding to allow for more modular styling
+    borderRadius: 16,
+    padding: 0,
     overflow: 'hidden',
-    elevation: 2,
+    elevation: 0,
     shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.05,
     shadowRadius: 3,
     borderWidth: 1,
     borderColor: COLORS.separator,
@@ -688,15 +716,15 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    padding: 15,
+    padding: 16,
     borderBottomWidth: 1,
     borderBottomColor: COLORS.separator,
-    backgroundColor: 'rgba(252, 76, 2, 0.05)', // Very light Strava orange background
+    backgroundColor: 'rgba(56, 142, 60, 0.05)', // Very light green background
   },
   userInfo: {
     flexDirection: 'row',
     alignItems: 'center',
-    maxWidth: '80%', // Prevent long usernames from pushing the rating off screen
+    maxWidth: '80%',
   },
   userAvatar: {
     width: 40,
@@ -709,18 +737,21 @@ const styles = StyleSheet.create({
   },
   userInitial: {
     color: 'white',
-    fontWeight: 'bold',
+    fontWeight: '600',
     fontSize: 16,
+    fontFamily: Platform.OS === 'ios' ? 'System' : 'sans-serif-medium',
   },
   commentUser: {
-    fontWeight: 'bold',
+    fontWeight: '600',
     fontSize: 16,
     color: COLORS.text,
     marginBottom: 2,
+    fontFamily: Platform.OS === 'ios' ? 'System' : 'sans-serif-medium',
   },
   commentDate: {
     color: COLORS.textMuted,
     fontSize: 12,
+    fontFamily: Platform.OS === 'ios' ? 'System' : 'sans-serif',
   },
   ratingBadge: {
     backgroundColor: COLORS.primary,
@@ -734,20 +765,22 @@ const styles = StyleSheet.create({
   },
   ratingBadgeText: {
     color: 'white',
-    fontWeight: 'bold',
+    fontWeight: '600',
     fontSize: 14,
     marginRight: 3,
+    fontFamily: Platform.OS === 'ios' ? 'System' : 'sans-serif-medium',
   },
   ratingBadgeStar: {
-    marginBottom: 1, // Slight alignment adjustment
+    marginBottom: 1,
   },
   commentBodyContainer: {
-    padding: 15,
+    padding: 16,
     backgroundColor: COLORS.background,
   },
   commentText: {
     fontSize: 15,
     lineHeight: 22,
     color: COLORS.text,
+    fontFamily: Platform.OS === 'ios' ? 'System' : 'sans-serif-light',
   },
 })
