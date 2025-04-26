@@ -354,7 +354,7 @@ export default function TrackingScreen({ navigation }) {
 
   return (
     <SafeAreaView style={styles.container}>
-      <StatusBar barStyle="light-content" backgroundColor="#000" />
+      <StatusBar barStyle="dark-content" backgroundColor="transparent" translucent />
       
       <View style={styles.mapContainer}>
         {currentLocation ? (
@@ -372,22 +372,26 @@ export default function TrackingScreen({ navigation }) {
             followsUserLocation={tracking && !paused}
             scrollEnabled={true}
             zoomEnabled={true}
+            showsCompass={true}
+            showsScale={true}
+            mapType="standard"
           >
             {routeCoordinates.length > 0 && (
               <Polyline
                 coordinates={routeCoordinates}
-                strokeWidth={5}
+                strokeWidth={4}
                 strokeColor="#FC4C02"
                 lineCap="round"
                 lineJoin="round"
               />
             )}
             
-            {/* Add a start marker if tracking */}
+            {/* Start marker with custom callout */}
             {tracking && routeCoordinates.length > 0 && (
               <Marker
                 coordinate={routeCoordinates[0]}
                 title="Start"
+                description="Your journey began here"
                 pinColor="green"
               />
             )}
@@ -395,6 +399,15 @@ export default function TrackingScreen({ navigation }) {
         ) : (
           <View style={styles.loadingContainer}>
             <Text style={styles.loadingText}>Getting your location...</Text>
+          </View>
+        )}
+        
+        {/* Map overlay for current stats summary */}
+        {tracking && !paused && (
+          <View style={styles.mapOverlay}>
+            <Text style={styles.mapOverlayText}>
+              {formatDistance(stats.distance)} • {formatDuration(stats.duration)}
+            </Text>
           </View>
         )}
       </View>
@@ -430,6 +443,7 @@ export default function TrackingScreen({ navigation }) {
           <TouchableOpacity 
             style={styles.trackButton} 
             onPress={startTracking}
+            activeOpacity={0.8}
           >
             <Text style={styles.trackButtonText}>Start Tracking</Text>
             <Ionicons name="play" size={20} color="white" />
@@ -440,6 +454,7 @@ export default function TrackingScreen({ navigation }) {
             <TouchableOpacity 
               style={[styles.actionButton, paused ? styles.resumeButton : styles.pauseButton]} 
               onPress={pauseTracking}
+              activeOpacity={0.8}
             >
               <Ionicons name={paused ? "play" : "pause"} size={22} color="white" />
               <Text style={styles.actionButtonText}>{paused ? "Resume" : "Pause"}</Text>
@@ -449,6 +464,7 @@ export default function TrackingScreen({ navigation }) {
             <TouchableOpacity 
               style={[styles.actionButton, styles.stopButton]} 
               onPress={stopTracking}
+              activeOpacity={0.8}
             >
               <Ionicons name="stop" size={22} color="white" />
               <Text style={styles.actionButtonText}>Stop</Text>
@@ -457,24 +473,51 @@ export default function TrackingScreen({ navigation }) {
         )}
       </View>
       
-      {/* Save Modal */}
+      {/* Enhanced Save Modal */}
       <Modal
-        animationType="slide"
+        animationType="fade"
         transparent={true}
         visible={saveModalVisible}
         onRequestClose={() => setSaveModalVisible(false)}
       >
         <View style={styles.modalContainer}>
           <View style={styles.modalContent}>
-            <Text style={styles.modalTitle}>Save Your Hike?</Text>
-            <Text style={styles.modalText}>
-              Distance: {formatDistance(stats.distance)}{'\n'}
-              Duration: {formatDuration(stats.duration)}{'\n'}
-              Pace: {formatPace(stats.pace)}{'\n'}
-              Elevation Gain: {stats.elevation.toFixed(1)}m
-            </Text>
+            <View style={styles.modalHeader}>
+              <Text style={styles.modalTitle}>Save Your Hike</Text>
+              <MaterialIcons name="hiking" size={28} color="#FC4C02" />
+            </View>
             
-            <View style={styles.modalButtons}>
+            <View style={styles.modalStatsContainer}>
+              <View style={styles.modalStatRow}>
+                <View style={styles.modalStatItem}>
+                  <Ionicons name="speedometer-outline" size={22} color="#555" />
+                  <Text style={styles.modalStatLabel}>Distance</Text>
+                  <Text style={styles.modalStatValue}>{formatDistance(stats.distance)}</Text>
+                </View>
+                
+                <View style={styles.modalStatItem}>
+                  <Ionicons name="time-outline" size={22} color="#555" />
+                  <Text style={styles.modalStatLabel}>Duration</Text>
+                  <Text style={styles.modalStatValue}>{formatDuration(stats.duration)}</Text>
+                </View>
+              </View>
+              
+              <View style={styles.modalStatRow}>
+                <View style={styles.modalStatItem}>
+                  <MaterialIcons name="speed" size={22} color="#555" />
+                  <Text style={styles.modalStatLabel}>Pace</Text>
+                  <Text style={styles.modalStatValue}>{formatPace(stats.pace)}</Text>
+                </View>
+                
+                <View style={styles.modalStatItem}>
+                  <MaterialIcons name="terrain" size={22} color="#555" />
+                  <Text style={styles.modalStatLabel}>Elevation</Text>
+                  <Text style={styles.modalStatValue}>{stats.elevation.toFixed(1)}m</Text>
+                </View>
+              </View>
+            </View>
+            
+            <View style={styles.modalButtonsContainer}>
               <TouchableOpacity 
                 style={[styles.modalButton, styles.discardButton]}
                 onPress={handleDiscardHike}
@@ -486,29 +529,44 @@ export default function TrackingScreen({ navigation }) {
                 style={[styles.modalButton, styles.saveButton]}
                 onPress={handleSaveHike}
               >
-                <Text style={styles.saveButtonText}>Save</Text>
+                <Text style={styles.saveButtonText}>Save Hike</Text>
               </TouchableOpacity>
             </View>
           </View>
         </View>
       </Modal>
 
-      {/* Paused overlay indicator */}
+      {/* Enhanced Paused overlay */}
       {paused && tracking && (
         <View style={styles.pausedOverlay}>
-          <Text style={styles.pausedText}>PAUSED</Text>
-          <View style={styles.pausedStatsContainer}>
-            <Text style={styles.pausedStat}>Distance: {formatDistance(stats.distance)}</Text>
-            <Text style={styles.pausedStat}>Duration: {formatDuration(stats.duration)}</Text>
-            <Text style={styles.pausedStat}>Pace: {formatPace(stats.pace)}</Text>
+          <View style={styles.pausedContent}>
+            <Text style={styles.pausedText}>PAUSED</Text>
+            <View style={styles.pausedStatsContainer}>
+              <View style={styles.pausedStatRow}>
+                <Ionicons name="speedometer-outline" size={20} color="#FC4C02" />
+                <Text style={styles.pausedStat}>{formatDistance(stats.distance)}</Text>
+              </View>
+              
+              <View style={styles.pausedStatRow}>
+                <Ionicons name="time-outline" size={20} color="#FC4C02" />
+                <Text style={styles.pausedStat}>{formatDuration(stats.duration)}</Text>
+              </View>
+              
+              <View style={styles.pausedStatRow}>
+                <MaterialIcons name="speed" size={20} color="#FC4C02" />
+                <Text style={styles.pausedStat}>{formatPace(stats.pace)}</Text>
+              </View>
+            </View>
+            
+            <TouchableOpacity 
+              style={styles.resumeOverlayButton}
+              onPress={pauseTracking}
+              activeOpacity={0.9}
+            >
+              <Ionicons name="play" size={24} color="white" />
+              <Text style={styles.resumeButtonText}>RESUME</Text>
+            </TouchableOpacity>
           </View>
-          <TouchableOpacity 
-            style={styles.resumeOverlayButton}
-            onPress={pauseTracking}
-          >
-            <Ionicons name="play" size={24} color="white" />
-            <Text style={styles.resumeButtonText}>Resume</Text>
-          </TouchableOpacity>
         </View>
       )}
     </SafeAreaView>
@@ -518,10 +576,11 @@ export default function TrackingScreen({ navigation }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#000',
+    backgroundColor: '#2E7D32',
   },
   mapContainer: {
     flex: 1,
+    position: 'relative',
   },
   map: {
     ...StyleSheet.absoluteFillObject,
@@ -530,15 +589,35 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+    backgroundColor: '#222',
   },
   loadingText: {
     color: '#FFF',
     fontSize: 16,
+    fontWeight: '500',
+  },
+  mapOverlay: {
+    position: 'absolute',
+    top: Platform.OS === 'ios' ? 50 : 40,
+    alignSelf: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.7)',
+    paddingVertical: 8,
+    paddingHorizontal: 16,
+    borderRadius: 20,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.2)',
+  },
+  mapOverlayText: {
+    color: 'white',
+    fontWeight: '600',
+    fontSize: 16,
   },
   statsContainer: {
-    backgroundColor: 'rgba(0, 0, 0, 0.8)',
+    backgroundColor: 'rgba(0, 0, 0, 0.9)',
     paddingVertical: 15,
     paddingHorizontal: 20,
+    borderTopWidth: 1,
+    borderTopColor: 'rgba(255, 255, 255, 0.1)',
   },
   buttonContainer: {
     flexDirection: 'row',
@@ -547,22 +626,34 @@ const styles = StyleSheet.create({
     paddingVertical: 15,
     paddingHorizontal: 20,
     backgroundColor: '#000',
+    borderTopWidth: 1,
+    borderTopColor: 'rgba(255, 255, 255, 0.05)',
   },
   backButton: {
     width: 44,
     height: 44,
     borderRadius: 22,
-    backgroundColor: 'rgba(255, 255, 255, 0.2)',
+    backgroundColor: 'rgba(255, 255, 255, 0.15)',
     justifyContent: 'center',
     alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 3,
+    elevation: 2,
   },
   trackButton: {
     flexDirection: 'row',
     backgroundColor: '#FC4C02',
-    paddingHorizontal: 20,
-    paddingVertical: 12,
+    paddingHorizontal: 24,
+    paddingVertical: 14,
     borderRadius: 30,
     alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.3,
+    shadowRadius: 4,
+    elevation: 3,
   },
   trackingButtonsContainer: {
     flexDirection: 'row',
@@ -572,27 +663,33 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     paddingHorizontal: 16,
-    paddingVertical: 10,
+    paddingVertical: 12,
     borderRadius: 25,
     marginLeft: 10,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 2,
+    elevation: 2,
   },
   actionButtonText: {
     color: 'white',
-    fontWeight: 'bold',
-    marginLeft: 4,
+    fontWeight: '600',
+    marginLeft: 6,
+    fontSize: 14,
   },
   pauseButton: {
-    backgroundColor: '#FFA000', // Amber color for pause
+    backgroundColor: '#FFA000',
   },
   resumeButton: {
-    backgroundColor: '#4CAF50', // Green color for resume
+    backgroundColor: '#4CAF50',
   },
   stopButton: {
-    backgroundColor: '#D32F2F', // Red color for stop
+    backgroundColor: '#D32F2F',
   },
   trackButtonText: {
     color: 'white',
-    fontWeight: 'bold',
+    fontWeight: '600',
     fontSize: 16,
     marginRight: 8,
   },
@@ -600,53 +697,87 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: 'rgba(0, 0, 0, 0.7)',
+    backgroundColor: 'rgba(0, 0, 0, 0.8)',
   },
   modalContent: {
-    width: '80%',
+    width: '85%',
     backgroundColor: 'white',
-    borderRadius: 12,
-    padding: 24,
-    alignItems: 'center',
+    borderRadius: 16,
+    padding: 0,
+    overflow: 'hidden',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 5,
   },
-  modalTitle: {
-    fontSize: 22,
-    fontWeight: 'bold',
-    color: '#333',
-    marginBottom: 16,
-  },
-  modalText: {
-    fontSize: 16,
-    color: '#666',
-    textAlign: 'center',
-    marginBottom: 24,
-    lineHeight: 24,
-  },
-  modalButtons: {
+  modalHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    width: '100%',
+    alignItems: 'center',
+    backgroundColor: '#f8f8f8',
+    paddingVertical: 16,
+    paddingHorizontal: 20,
+    borderBottomWidth: 1,
+    borderBottomColor: '#eaeaea',
+  },
+  modalTitle: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: '#333',
+  },
+  modalStatsContainer: {
+    padding: 20,
+  },
+  modalStatRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: 20,
+  },
+  modalStatItem: {
+    alignItems: 'center',
+    width: '48%',
+  },
+  modalStatLabel: {
+    fontSize: 14,
+    color: '#666',
+    marginTop: 4,
+  },
+  modalStatValue: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#333',
+    marginTop: 4,
+  },
+  modalButtonsContainer: {
+    flexDirection: 'row',
+    borderTopWidth: 1,
+    borderTopColor: '#eaeaea',
   },
   modalButton: {
     flex: 1,
-    paddingVertical: 12,
-    borderRadius: 8,
+    paddingVertical: 16,
     alignItems: 'center',
-    marginHorizontal: 5,
   },
   discardButton: {
-    backgroundColor: '#F5F5F5',
+    backgroundColor: '#f8f8f8',
+    borderRightWidth: 0.5,
+    borderRightColor: '#eaeaea',
   },
   saveButton: {
     backgroundColor: '#FC4C02',
+    borderLeftWidth: 0.5,
+    borderLeftColor: '#eaeaea',
   },
   discardButtonText: {
     color: '#666',
-    fontWeight: 'bold',
+    fontWeight: '600',
+    fontSize: 16,
   },
   saveButtonText: {
     color: 'white',
-    fontWeight: 'bold',
+    fontWeight: '600',
+    fontSize: 16,
   },
   pausedOverlay: {
     position: 'absolute',
@@ -654,42 +785,68 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     bottom: 0,
-    backgroundColor: 'rgba(0, 0, 0, 0.7)',
+    backgroundColor: 'rgba(0, 0, 0, 0.85)',
     justifyContent: 'center',
     alignItems: 'center',
     zIndex: 1000,
   },
+  pausedContent: {
+    width: '80%',
+    alignItems: 'center',
+    backgroundColor: 'rgba(30, 30, 30, 0.9)',
+    borderRadius: 20,
+    padding: 25,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.1)',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.5,
+    shadowRadius: 8,
+    elevation: 5,
+  },
   pausedText: {
     color: 'white',
-    fontSize: 36,
+    fontSize: 32,
     fontWeight: 'bold',
-    marginBottom: 20,
+    marginBottom: 25,
+    letterSpacing: 3,
   },
   pausedStatsContainer: {
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
-    borderRadius: 10, 
-    padding: 16,
+    backgroundColor: 'rgba(255, 255, 255, 0.08)',
+    borderRadius: 12, 
+    padding: 20,
     marginBottom: 30,
-    width: '80%',
+    width: '100%',
+  },
+  pausedStatRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginVertical: 6,
   },
   pausedStat: {
     color: 'white',
     fontSize: 18,
-    marginVertical: 5,
-    textAlign: 'center',
+    fontWeight: '500',
+    marginLeft: 12,
   },
   resumeOverlayButton: {
     flexDirection: 'row',
     backgroundColor: '#4CAF50',
-    paddingHorizontal: 25,
-    paddingVertical: 15,
+    paddingHorizontal: 28,
+    paddingVertical: 16,
     borderRadius: 30,
     alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.4,
+    shadowRadius: 5,
+    elevation: 4,
   },
   resumeButtonText: {
     color: 'white',
     fontWeight: 'bold',
-    fontSize: 18,
+    fontSize: 16,
     marginLeft: 8,
+    letterSpacing: 1,
   }
 })

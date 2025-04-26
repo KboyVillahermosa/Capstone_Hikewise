@@ -42,6 +42,11 @@ export default function RegisterScreen({ navigation }) {
     const { data: authData, error: authError } = await supabase.auth.signUp({
       email: email,
       password: password,
+      options: {
+        data: {
+          username: username
+        }
+      }
     })
 
     if (authError) {
@@ -50,19 +55,9 @@ export default function RegisterScreen({ navigation }) {
       return
     }
 
-    // Insert username into profiles table
-    if (authData.user) {
-      const { error: profileError } = await supabase
-        .from('profiles')
-        .insert([{ id: authData.user.id, username: username }])
-      
-      if (profileError) {
-        Alert.alert('Error', profileError.message)
-      } else {
-        Alert.alert('Success', 'Registration successful! Please check your email for confirmation.')
-        navigation.navigate('Login')
-      }
-    }
+    // The user has been created but may need email verification
+    Alert.alert('Success', 'Registration successful! Please check your email for confirmation.')
+    navigation.navigate('Login')
     
     setLoading(false)
   }

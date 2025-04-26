@@ -13,10 +13,13 @@ import {
   Platform,
   ActivityIndicator,
   ImageBackground,
-  Dimensions
+  Dimensions,
+  ScrollView
 } from 'react-native'
 import { supabase } from '../utils/supabase'
 import { LinearGradient } from 'expo-linear-gradient';
+import { signInWithGoogle } from '../utils/auth';
+import { Ionicons } from '@expo/vector-icons';
 
 const { width, height } = Dimensions.get('window');
 
@@ -41,8 +44,31 @@ export default function LoginScreen({ navigation }) {
     setLoading(false)
   }
 
+  const handleGoogleSignIn = async () => {
+    try {
+      setLoading(true);
+      const session = await signInWithGoogle();
+      
+      // Log the session for debugging
+      console.log("Session returned:", session ? "Session exists" : "No session");
+      
+      if (session && session.session) {
+        // Navigate to Main screen
+        navigation.replace('Main'); // Use replace instead of navigate
+      } else {
+        console.log("No valid session returned");
+        Alert.alert("Login Error", "Could not retrieve session after login");
+      }
+    } catch (error) {
+      console.error("Google sign-in error in LoginScreen:", error);
+      Alert.alert("Login Error", error.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
       <StatusBar translucent backgroundColor="transparent" />
       
       {/* Header with background image */}
@@ -65,76 +91,98 @@ export default function LoginScreen({ navigation }) {
       
       {/* Content section */}
       <KeyboardAvoidingView 
-        behavior={Platform.OS === "ios" ? "padding" : "height"}
+        behavior={Platform.OS === "ios" ? "padding" : undefined}
         style={styles.content}
+        keyboardVerticalOffset={Platform.OS === "ios" ? -64 : 0}
       >
-        <View style={styles.card}>
-          <View style={styles.logoContainer}>
-            <View style={styles.logoCircle}>
-              <Image 
-                source={require('../assets/images/logo.png')} 
-                style={styles.logo}
-              />
+        <ScrollView 
+          style={styles.scrollView}
+          contentContainerStyle={styles.scrollViewContent}
+          showsVerticalScrollIndicator={false}
+        >
+          <View style={styles.card}>
+            <View style={styles.logoContainer}>
+              <View style={styles.logoCircle}>
+                <Image 
+                  source={require('../assets/images/logo.png')} 
+                  style={styles.logo}
+                />
+              </View>
+              <Text style={styles.subtitle}>Discover trails. Share experiences.</Text>
             </View>
-            <Text style={styles.subtitle}>Discover trails. Share experiences.</Text>
-          </View>
-          
-          <View style={styles.formContainer}>
-            <Text style={styles.formLabel}>EMAIL</Text>
-            <View style={styles.inputContainer}>
-              <TextInput
-                style={styles.input}
-                onChangeText={(text) => setEmail(text)}
-                value={email}
-                placeholder="your@email.com"
-                placeholderTextColor="#A0A0A0"
-                autoCapitalize="none"
-                keyboardType="email-address"
-              />
+            
+            <View style={styles.formContainer}>
+              <Text style={styles.formLabel}>EMAIL</Text>
+              <View style={styles.inputContainer}>
+                <TextInput
+                  style={styles.input}
+                  onChangeText={(text) => setEmail(text)}
+                  value={email}
+                  placeholder="your@email.com"
+                  placeholderTextColor="#A0A0A0"
+                  autoCapitalize="none"
+                  keyboardType="email-address"
+                />
+              </View>
+
+              <Text style={styles.formLabel}>PASSWORD</Text>
+              <View style={styles.inputContainer}>
+                <TextInput
+                  style={styles.input}
+                  onChangeText={(text) => setPassword(text)}
+                  value={password}
+                  secureTextEntry={true}
+                  placeholder="Your password"
+                  placeholderTextColor="#A0A0A0"
+                  autoCapitalize="none"
+                />
+              </View>
+
+              <TouchableOpacity 
+                style={styles.forgotPassword}
+                onPress={() => Alert.alert('Reset Password', 'Password reset functionality will be implemented here')}
+              >
+                <Text style={styles.forgotPasswordText}>Forgot Password?</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity 
+                style={styles.loginButton}
+                onPress={() => signInWithEmail()}
+                disabled={loading}
+              >
+                {loading ? (
+                  <ActivityIndicator color="#FFFFFF" />
+                ) : (
+                  <Text style={styles.loginButtonText}>LOG IN</Text>
+                )}
+              </TouchableOpacity>
             </View>
 
-            <Text style={styles.formLabel}>PASSWORD</Text>
-            <View style={styles.inputContainer}>
-              <TextInput
-                style={styles.input}
-                onChangeText={(text) => setPassword(text)}
-                value={password}
-                secureTextEntry={true}
-                placeholder="Your password"
-                placeholderTextColor="#A0A0A0"
-                autoCapitalize="none"
-              />
+            <View style={styles.separator}>
+              <View style={styles.line} />
+              <Text style={styles.separatorText}>OR</Text>
+              <View style={styles.line} />
             </View>
 
             <TouchableOpacity 
-              style={styles.forgotPassword}
-              onPress={() => Alert.alert('Reset Password', 'Password reset functionality will be implemented here')}
-            >
-              <Text style={styles.forgotPasswordText}>Forgot Password?</Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity 
-              style={styles.loginButton}
-              onPress={() => signInWithEmail()}
+              style={styles.googleButton}
+              onPress={handleGoogleSignIn}
               disabled={loading}
             >
-              {loading ? (
-                <ActivityIndicator color="#FFFFFF" />
-              ) : (
-                <Text style={styles.loginButtonText}>LOG IN</Text>
-              )}
+              <Ionicons name="logo-google" size={24} color="#EA4335" />
+              <Text style={styles.googleButtonText}>Continue with Google</Text>
             </TouchableOpacity>
-          </View>
 
-          <View style={styles.footer}>
-            <Text style={styles.footerText}>Don't have an account? </Text>
-            <TouchableOpacity onPress={() => navigation.navigate('Register')}>
-              <Text style={styles.registerLink}>Sign Up</Text>
-            </TouchableOpacity>
+            <View style={styles.footer}>
+              <Text style={styles.footerText}>Don't have an account? </Text>
+              <TouchableOpacity onPress={() => navigation.navigate('Register')}>
+                <Text style={styles.registerLink}>Sign Up</Text>
+              </TouchableOpacity>
+            </View>
           </View>
-        </View>
+        </ScrollView>
       </KeyboardAvoidingView>
-    </View>
+    </SafeAreaView>
   )
 }
 
@@ -144,7 +192,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#F5F5F5',
   },
   headerContainer: {
-    height: height * 0.28,
+    height: height * 0.25, // Reduced header height
     width: width,
   },
   headerBackground: {
@@ -158,7 +206,7 @@ const styles = StyleSheet.create({
   },
   headerContent: {
     padding: 20,
-    paddingBottom: 30,
+    paddingBottom: 20, // Reduced padding
   },
   headerText: {
     color: 'white',
@@ -173,9 +221,12 @@ const styles = StyleSheet.create({
   content: {
     flex: 1,
     marginTop: -20,
-    borderTopLeftRadius: 24,
-    borderTopRightRadius: 24,
-    overflow: 'hidden',
+  },
+  scrollView: {
+    flex: 1,
+  },
+  scrollViewContent: {
+    flexGrow: 1,
   },
   card: {
     flex: 1,
@@ -183,6 +234,7 @@ const styles = StyleSheet.create({
     borderTopLeftRadius: 24,
     borderTopRightRadius: 24,
     padding: 24,
+    paddingBottom: Platform.OS === 'ios' ? 36 : 24, // Extra padding for iOS
     elevation: 4,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: -3 },
@@ -191,13 +243,13 @@ const styles = StyleSheet.create({
   },
   logoContainer: {
     alignItems: 'center',
-    marginBottom: 30,
+    marginBottom: 20, // Reduced margin
     marginTop: 10,
   },
   logoCircle: {
-    width: 90,
-    height: 90,
-    borderRadius: 45,
+    width: 80, // Smaller logo
+    height: 80, // Smaller logo
+    borderRadius: 40,
     backgroundColor: 'white',
     justifyContent: 'center',
     alignItems: 'center',
@@ -206,33 +258,33 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.2,
     shadowRadius: 4,
-    marginBottom: 16,
+    marginBottom: 12, // Reduced margin
   },
   logo: {
-    width: 70,
-    height: 70,
+    width: 60, // Smaller logo
+    height: 60, // Smaller logo
     resizeMode: 'contain',
   },
   subtitle: {
-    fontSize: 16,
+    fontSize: 15,
     color: '#666666',
     textAlign: 'center',
     marginTop: 4,
   },
   formContainer: {
     width: '100%',
-    marginBottom: 30,
+    marginBottom: 20, // Reduced margin
   },
   formLabel: {
     fontSize: 12,
     fontWeight: 'bold',
     color: '#555555',
-    marginBottom: 8,
+    marginBottom: 6, // Reduced margin
     marginLeft: 4,
     letterSpacing: 0.5,
   },
   inputContainer: {
-    marginBottom: 20,
+    marginBottom: 16, // Reduced margin
     borderRadius: 8,
     overflow: 'hidden',
     backgroundColor: '#F7F7FA',
@@ -245,23 +297,24 @@ const styles = StyleSheet.create({
     shadowRadius: 2,
   },
   input: {
-    padding: 16,
+    padding: 14, // Reduced padding
     fontSize: 16,
     color: '#333333',
+    height: 50, // Fixed height
   },
   forgotPassword: {
     alignSelf: 'flex-end',
-    marginBottom: 24,
+    marginBottom: 20, // Reduced margin
   },
   forgotPasswordText: {
-    color: '#1976D2', // Mountain Blue instead of Strava orange
+    color: '#1976D2',
     fontSize: 14,
     fontWeight: '600',
   },
   loginButton: {
-    backgroundColor: '#2E7D32', // Forest Green instead of Strava orange
+    backgroundColor: '#2E7D32',
     borderRadius: 12,
-    height: 54,
+    height: 50, // Reduced height
     justifyContent: 'center',
     alignItems: 'center',
     elevation: 3,
@@ -276,11 +329,43 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     letterSpacing: 0.5,
   },
+  separator: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginVertical: 16, // Reduced margin
+  },
+  line: {
+    flex: 1,
+    height: 1,
+    backgroundColor: '#E0E0E0',
+  },
+  separatorText: {
+    paddingHorizontal: 10,
+    color: '#757575',
+  },
+  googleButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: 'white',
+    borderRadius: 12, // Matched to loginButton
+    borderWidth: 1,
+    borderColor: '#DADCE0',
+    padding: 12,
+    marginVertical: 8,
+    height: 50, // Matched to loginButton
+  },
+  googleButtonText: {
+    marginLeft: 12,
+    fontSize: 16,
+    color: '#444',
+    fontWeight: '500',
+  },
   footer: {
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
-    marginTop: 10,
+    marginTop: 16, // Reduced margin
   },
   footerText: {
     fontSize: 15,
@@ -289,6 +374,6 @@ const styles = StyleSheet.create({
   registerLink: {
     fontSize: 15,
     fontWeight: 'bold',
-    color: '#1976D2', // Mountain Blue instead of Strava orange
+    color: '#1976D2',
   }
 })
