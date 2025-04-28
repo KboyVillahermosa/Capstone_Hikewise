@@ -19,40 +19,60 @@ const getUserStorageKey = async () => {
 // Get all hike records for the current user
 export const getHikeRecords = async () => {
   try {
+    const userId = await getCurrentUserId();
+    if (!userId) return [];
+    
+    // Fetch from Supabase
+    const { data, error } = await supabase
+      .from('activities')
+      .select('*')
+      .eq('user_id', userId)
+      .order('date', { ascending: false });
+      
+    if (error) throw error;
+    
+    return data;
+  } catch (error) {
+    console.error('Error fetching hike records:', error);
+    // Fallback to local storage if Supabase fails
     const storageKey = await getUserStorageKey();
     const recordsJson = await AsyncStorage.getItem(storageKey);
-    
-    if (recordsJson !== null) {
-      const records = JSON.parse(recordsJson);
-      return records.sort((a, b) => new Date(b.date) - new Date(a.date)); // Sort by date, newest first
-    }
-    
-    return [];
-  } catch (error) {
-    console.error('Error getting hike records:', error);
-    // Return empty array if user is not authenticated or other error
-    return [];
+    return recordsJson ? JSON.parse(recordsJson) : [];
   }
 };
 
-// Save a new hike record for the current user
+// Modified version to save to Supabase
 export const saveHikeRecord = async (hikeData) => {
   try {
-    const storageKey = await getUserStorageKey();
-    const existingRecords = await getHikeRecords();
-    
-    // Generate a unique ID using timestamp and add user ID
     const userId = await getCurrentUserId();
-    const newHike = {
+    if (!userId) throw new Error('User is not authenticated');
+
+    // First, save to Supabase
+    const { data, error } = await supabase
+      .from('activities') // assuming your table is called 'activities'
+      .insert({
+        ...hikeData,
+        user_id: userId
+      })
+      .select();
+
+    if (error) throw error;
+
+    // Optionally, still keep a local copy in AsyncStorage
+    const storageKey = await getUserStorageKey();
+    const existingRecordsJson = await AsyncStorage.getItem(storageKey);
+    const existingRecords = existingRecordsJson ? JSON.parse(existingRecordsJson) : [];
+    
+    // Add the new record with its database ID
+    const newRecord = {
       ...hikeData,
-      id: Date.now().toString(),
-      userId: userId,
+      id: data[0].id // Use the ID from Supabase
     };
     
-    const updatedRecords = [newHike, ...existingRecords];
+    const updatedRecords = [...existingRecords, newRecord];
     await AsyncStorage.setItem(storageKey, JSON.stringify(updatedRecords));
     
-    return newHike;
+    return data[0];
   } catch (error) {
     console.error('Error saving hike record:', error);
     throw error;

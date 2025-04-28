@@ -1,10 +1,10 @@
+import React, { useEffect, useState } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { useEffect, useState } from 'react';
-import { StyleSheet } from 'react-native';
+import { StyleSheet, View, Text, ActivityIndicator } from 'react-native';
 import { supabase } from './utils/supabase';
-import MapView, { Marker } from 'react-native-maps';
 import * as Linking from 'expo-linking';
+import * as SecureStore from 'expo-secure-store';
 import { linking } from './utils/linking';
 
 // Import screens
@@ -25,73 +25,119 @@ import MediaViewerScreen from './screens/MediaViewerScreen';
 
 const Stack = createNativeStackNavigator();
 
+// Helper function to store auth tokens securely
+async function saveToken(key, value) {
+  try {
+    await SecureStore.setItemAsync(key, value);
+  } catch (error) {
+    console.log('Error saving token:', error);
+  }
+}
+
+// Helper function to retrieve auth tokens
+async function getToken(key) {
+  try {
+    return await SecureStore.getItemAsync(key);
+  } catch (error) {
+    console.log('Error getting token:', error);
+    return null;
+  }
+}
+
 export default function App() {
-  const [session, setSession] = useState(null)
-  const [loading, setLoading] = useState(true)
+  const [session, setSession] = useState(null);
+  const [loading, setLoading] = useState(true);
 
+  // Initialize Supabase auth with stored tokens on startup
   useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session)
-      setLoading(false)
-    })
-
-    supabase.auth.onAuthStateChange((_event, session) => {
-      setSession(session)
-    })
-  }, [])
-
-  useEffect(() => {
-    // Handle deep links while the app is open
-    const subscription = Linking.addEventListener('url', handleDeepLink);
-
-    // Also handle the initial URL that may have launched the app
-    Linking.getInitialURL().then((url) => {
-      if (url) {
-        console.log("App launched with URL:", url);
-        handleDeepLink({ url });
+    async function initializeAuth() {
+      try {
+        // Try to get stored tokens
+        const accessToken = await getToken('supabase.access.token');
+        const refreshToken = await getToken('supabase.refresh.token');
+        
+        if (accessToken && refreshToken) {
+          // If we have tokens, try to set the session
+          const { data, error } = await supabase.auth.setSession({
+            access_token: accessToken,
+            refresh_token: refreshToken
+          });
+          
+          if (error) {
+            console.log('Session restore error:', error.message);
+            // Clear invalid tokens
+            await SecureStore.deleteItemAsync('supabase.access.token');
+            await SecureStore.deleteItemAsync('supabase.refresh.token');
+          } else if (data?.session) {
+            console.log('Session restored successfully');
+            setSession(data.session);
+          }
+        }
+        
+        // If no stored tokens or session restore failed, check for active session
+        const { data } = await supabase.auth.getSession();
+        if (data?.session) {
+          setSession(data.session);
+          
+          // Save the valid tokens
+          await saveToken('supabase.access.token', data.session.access_token);
+          await saveToken('supabase.refresh.token', data.session.refresh_token);
+        }
+      } catch (e) {
+        console.error('Auth initialization error:', e);
+      } finally {
+        setLoading(false);
       }
-    });
-
-    return () => subscription.remove();
+    }
+    
+    initializeAuth();
+    
+    // Set up auth state change listener
+    const { data: authListener } = supabase.auth.onAuthStateChange(
+      async (event, newSession) => {
+        console.log('Auth event:', event);
+        
+        setSession(newSession);
+        
+        // When a new session is created, store the tokens
+        if (newSession) {
+          await saveToken('supabase.access.token', newSession.access_token);
+          await saveToken('supabase.refresh.token', newSession.refresh_token);
+        } else {
+          // When session is ended, clear tokens
+          await SecureStore.deleteItemAsync('supabase.access.token');
+          await SecureStore.deleteItemAsync('supabase.refresh.token');
+        }
+      }
+    );
+    
+    return () => {
+      if (authListener && authListener.subscription) {
+        authListener.subscription.unsubscribe();
+      }
+    };
   }, []);
 
+  // Simplified deep link handler
   const handleDeepLink = async ({ url }) => {
+    if (!url) return;
+    
     console.log("Received deep link:", url);
     
-    // Check if this is an auth callback URL
-    if (url && (url.includes('auth/callback') || url.includes('login'))) {
-      console.log("Processing auth callback URL");
-      
+    if (url.includes('auth/callback') || url.includes('login')) {
       try {
-        // Parse the URL to get any tokens
         const parsedUrl = Linking.parse(url);
         
-        // If we have an access_token in the URL, use it to set the session
-        if (parsedUrl.queryParams && parsedUrl.queryParams.access_token) {
+        if (parsedUrl.queryParams?.access_token) {
           const { data, error } = await supabase.auth.setSession({
             access_token: parsedUrl.queryParams.access_token,
             refresh_token: parsedUrl.queryParams.refresh_token || '',
           });
           
-          if (error) {
-            console.error("Session error with tokens:", error);
-          } else if (data && data.session) {
-            console.log("Session established with tokens");
+          if (!error && data?.session) {
+            console.log("Session established via deep link");
             setSession(data.session);
-            return;
           }
-        }
-        
-        // If no tokens in URL or token setting failed, try refreshing the session
-        const { data, error } = await supabase.auth.getSession();
-        
-        if (error) {
-          console.error("Session error after deep link:", error);
-        } else if (data && data.session) {
-          console.log("Session refreshed after deep link");
-          setSession(data.session);
-        } else {
-          console.log("No active session found, user will need to log in");
         }
       } catch (e) {
         console.error("Error handling deep link:", e);
@@ -99,8 +145,25 @@ export default function App() {
     }
   };
 
+  useEffect(() => {
+    // Handle deep links
+    const subscription = Linking.addEventListener('url', handleDeepLink);
+    
+    // Check for initial link
+    Linking.getInitialURL().then(url => {
+      if (url) handleDeepLink({ url });
+    });
+    
+    return () => subscription.remove();
+  }, []);
+
   if (loading) {
-    return null; // Or a loading screen
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color="#2E7D32" />
+        <Text style={styles.loadingText}>Loading HikeWise...</Text>
+      </View>
+    );
   }
 
   // For debugging purposes, log the screens we have available
@@ -159,6 +222,17 @@ const styles = StyleSheet.create({
   map: {
     width: '100%',
     height: 200,
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#fff',
+  },
+  loadingText: {
+    marginTop: 10,
+    fontSize: 16,
+    color: '#2E7D32',
   },
 });
 
